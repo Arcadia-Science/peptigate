@@ -13,6 +13,14 @@ Download files from S3 to test software on.
 * nucleotide sequences for eventual clustering, dn/ds estimation, etc: `s3://arcadia-github-repository-outputs/2023-amblyomma-americanum-txome-assembly/outputs/annotation/dammit/orthofuser_final_clean.fa.transdecoder.cds`
 * **note** we need full length transcripts (long), these are also in the dammit folder. I don't think any tool take those as input tho, so proceeding with other files.
 
+or, on AWS instance where amblyomma txome work was done:
+```
+cp ~/2023-amblyomma-americanum-txome-assembly/outputs/annotation/dammit/orthofuser_final_clean.fa.dammit.fasta .
+cp ~/2023-amblyomma-americanum-txome-assembly/outputs/annotation/dammit/orthofuser_final_clean.fa.transdecoder.pep .
+cp ~/2023-amblyomma-americanum-txome-assembly/outputs/annotation/dammit/orthofuser_final_clean.fa.transdecoder.cds
+cp ~/2023-amblyomma-americanum-txome-assembly/outputs/annotation/dammit/orthofuser_final_clean.fa.transdecoder.cds .
+cp ~/2023-amblyomma-americanum-txome-assembly/outputs/assembly/small_contigs.fa .
+```
 
 ## download databases of small ORFs to see size distribution
 
@@ -87,4 +95,16 @@ docker run --platform linux/x86_64 -ti --rm -u $(id -u) -v "$(pwd):/app" antonio
 
 Switched dev over to AWS.
 
+```
+curl -JLO https://raw.githubusercontent.com/apcamargo/RNAsamba/master/data/partial_length_weights.hdf5
+curl -JLO https://raw.githubusercontent.com/apcamargo/RNAsamba/master/data/full_length_weights.hdf5
+rnasamba classify -p predicted_proteins_full_length_weights.fa classification_full_length_weights.tsv ../small_contigs.fa full_length_weights.hdf5
+rnasamba classify -p predicted_proteins_partial_length_weights.fa classification_partial_length_weights.tsv ../small_contigs.fa partial_length_weights.hdf5
+```
+
 ## cpc2
+```
+mkdir cpc2
+cd cpc2
+CPC2.py
+```
