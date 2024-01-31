@@ -22,7 +22,9 @@ cp ~/2023-amblyomma-americanum-txome-assembly/outputs/annotation/dammit/orthofus
 cp ~/2023-amblyomma-americanum-txome-assembly/outputs/assembly/small_contigs.fa .
 ```
 
-## download databases of small ORFs to see size distribution
+## sORF prediction
+
+### download databases of small ORFs to see size distribution
 
 ```
 mkdir smprot
@@ -45,13 +47,13 @@ seqkit stats *.fa.gz -T | csvtk csv2md -t
 |SmProt_MS.fa.gz               |FASTA |Protein|117099  |1759228|5      |15.0   |52     |12.0|14.0|18.0|0      |15 |0.00  |0.00  |0.00   |8.36 |
 |SmProt_RibosomeProfiling.fa.gz|FASTA |Protein|53459   |2319004|2      |43.4   |100    |21.0|39.0|64.0|0      |62 |0.00  |0.00  |0.00   |7.69 |
 
-## BORF
+### BORF
 
 ```
 borf -l 15 -s -o borf/small_contigs small_contigs.fa
 ```
 
-## CPAT
+### CPAT
 
 ```
 mkdir cpat
@@ -71,7 +73,7 @@ wget -O fly_Hexamer.tsv https://sourceforge.net/projects/rna-cpat/files/v1.2.2/p
 cpat.py -x fly_Hexamer.tsv -d Fly_logitModel.RData --min-orf 15 --antisense -g ../small_contigs.fa -o small_contigs_sorfs
 ```
 
-## rnasamba
+### rnasamba
 
 All three of the below installation methods failed on Mac Arm64 architecture, even when running rosetta. 
 The conda and pip methods failed with `[6]    582 illegal hardware instruction`
@@ -102,9 +104,25 @@ rnasamba classify -p predicted_proteins_full_length_weights.fa classification_fu
 rnasamba classify -p predicted_proteins_partial_length_weights.fa classification_partial_length_weights.tsv ../small_contigs.fa partial_length_weights.hdf5
 ```
 
-## cpc2
+### cpc2
 ```
 mkdir cpc2
 cd cpc2
 CPC2.py
 ```
+
+## Cleavage tools
+
+### nlpprecursor
+
+```
+conda create -n nlpprecursor
+conda activate nlpprecursor
+mamba install python=3.7
+pip install torch==1.0.0
+pip install git+https://github.com/magarveylab/nlpprecursor
+mamba install fastai
+```
+
+### deeppetide
+
