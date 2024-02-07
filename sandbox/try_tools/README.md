@@ -116,12 +116,27 @@ CPC2.py
 ### nlpprecursor
 
 ```
-conda create -n nlpprecursor
+conda create -n nlpprecursor python=3.7
 conda activate nlpprecursor
-mamba install python=3.7
 pip install torch==1.0.0
+pip install git+https://github.com/nishanthmerwin/fastai.git@deepripp_install
 pip install git+https://github.com/magarveylab/nlpprecursor
-mamba install fastai
+mamba install biopython
+```
+
+download  models
+```
+curl -JLO https://github.com/magarveylab/NLPPrecursor/releases/download/1.0/nlpprecursor_models.tar.gz
+tar xf nlpprecursor_models.tar.gz
+```
+make a small protein set
+```
+head -n 32 ../orthofuser_final_clean.fa.transdecoder.pep > head.pep
+sed '/^[^>]/s/\*//g' head.pep > head.noasterisk.pep
+
+```
+```
+python run_nlpprecursor.py models head.noasterisk.pep out.tsv
 ```
 
 ### deeppetide
