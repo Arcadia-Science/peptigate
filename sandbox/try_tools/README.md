@@ -126,3 +126,15 @@ mamba install fastai
 
 ### deeppetide
 
+prepare sequences by removing transdecoder's stop codon asterisk
+```
+sed '/^[^>]/s/\*//g' orthofuser_final_clean.fa.transdecoder.pep > orthofuser_final_clean.fa.transdecoder.noasterisk.pep
+```
+
+Installed via git clone, will need to build a docker container and put on docker hub for use with a singularity environment for snakemake.
+
+```
+python3 predict.py -ff orthofuser_final_clean.fa.transdecoder.noasterisk.pep -od testrun_outputs2/ --batch_size 1000
+```
+
+if not sped up by GPU & increased batch size, [split file and run in separate deeppeptide runs](https://github.com/fteufel/DeepPeptide/issues/2).
