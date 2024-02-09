@@ -153,3 +153,45 @@ python3 predict.py -ff orthofuser_final_clean.fa.transdecoder.noasterisk.pep -od
 ```
 
 if not sped up by GPU & increased batch size, [split file and run in separate deeppeptide runs](https://github.com/fteufel/DeepPeptide/issues/2).
+
+## NRPS prediction
+
+download HMM profiles
+
+```
+curl -JLO https://raw.githubusercontent.com/antismash/antismash/master/antismash/detection/nrps_pks_domains/data/nrpspksdomains.hmm 
+```
+
+```
+curl -JLO https://www.ebi.ac.uk/interpro/wwwapi//entry/pfam/PF00501?annotation=hmm
+curl -JLO https://www.ebi.ac.uk/interpro/wwwapi//entry/pfam/PF06339?annotation=hmm
+curl -JLO https://www.ebi.ac.uk/interpro/wwwapi//entry/pfam/PF00975?annotation=hmm
+curl -JLO https://www.ebi.ac.uk/interpro/wwwapi//entry/pfam/PF00668?annotation=hmm
+for infile in PF*
+do
+mv $infile ${infile}.hmm.gz
+done
+gunzip *gz
+```
+
+```
+curl -JLo journal.pcbi.1011100.s056.zip https://doi.org/10.1371/journal.pcbi.1011100.s056
+unzip journal.pcbi.1011100.s056.zip
+mv C\ domain\ subtype\ reference\ HMM\ files journal.pcbi.1011100.s056
+```
+
+```
+mamba install hmmer
+```
+
+combine and run
+```
+cat PF*.hmm > PF.hmm
+hmmconvert PF.hmm > PF_hmmconvert.hmm
+hmmconvert nrpspksdomains.hmm > nrpspksdomains_hmmconvert.hmm
+cat journal.pcbi.1011100.s056/*hmm > journal.pcbi.1011100.s056.hmm
+hmmconvert journal.pcbi.1011100.s056.hmm > journal.pcbi.1011100.s056_hmmconvert.hmm
+cat *hmmconvert.hmm > nrps.hmm
+hmmsearch -o out.txt --tblout out.tsv --domtblout domout.tsv --cpu 4 nrps.hmm ../orthofuser_final_clean.fa.transdecoder.pep_head
+```
+
