@@ -1,3 +1,6 @@
+/inputs
+/tmp_mmseqs2
+
 # packages installed in editable mode
 envs/src/**
 

@@ -4,8 +4,11 @@ source("scripts/parse_sequence_information.R")
 
 # read in data sets ------------------------------------------------------
 
+# KC: the 'sequence' column is actually a sequence IDs (or 'contig names')
 fai_col_names <- c("sequence", "length", "offset", "linebases", "linewidth")
 clusters <- read_tsv(snakemake@input[['clusters']], col_names = c("rep", "cluster_member"))
+
+# KC: these are the coding and noncoding datasets from the RNAChallenge
 coding_validation <- read_tsv(unlist(snakemake@input[['validation_fai']])[1], col_names = fai_col_names)
 noncoding_validation <- read_tsv(unlist(snakemake@input[['validation_fai']])[2], col_names = fai_col_names)
 all_fai <- read_tsv(snakemake@input[['all_fai']], col_names = fai_col_names) %>%

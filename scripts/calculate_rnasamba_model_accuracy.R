@@ -25,5 +25,8 @@ model_confusion_matrix_df <- bind_rows(data.frame(value = model_confusion_matrix
 # convert the confusion matrix into a data frame
 model_confusion_matrix_freq_df <- model_confusion_matrix %>% as.table() %>% data.frame()
 
+# KC: this is 'confusionmatrix_{dataset_type}.tsv'
 write_tsv(model_confusion_matrix_df, snakemake@output[['metrics']])
+
+# KC: this is 'accuracy_metrics_{dataset_type}.tsv'
 write_tsv(model_confusion_matrix_freq_df, snakemake@output[['freq']])
