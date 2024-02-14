@@ -16,7 +16,7 @@ VALIDATION_TYPES = [
 # In addition, the order of CODING_TYPES and DATASET_TYPES is used to declare outputs in the rule/R script process_sequences_into_nonoverlapping_sets.
 CODING_TYPES = ["coding", "noncoding"]
 DATASET_TYPES = ["train", "test", "validation"]
-MODEL_TYPES = ["eukaryote", "human"]
+MODEL_TYPES = ["eukaryote", "eukaryotesmall" "human"]
 
 
 rule all:
@@ -312,3 +312,49 @@ rule calculate_sequence_statistics:
         "envs/tidyverse.yml"
     script:
         "scripts/calculate_sequence_statistics.R"
+
+
+##################################################################
+## ugly repetitive code to make sORF model
+##################################################################
+
+
+rule filter_sequence_sets_to_small:
+    """
+    TER note this will probably create imbalanced classes.
+    These names could be pulled by the process R scripts...
+    """
+    input:
+        fa="outputs/models/datasets/2_sequence_sets/{coding_type}_{dataset_type}.fa",
+    output:
+        fa="outputs/models/datasets/2_sequence_sets/small/{coding_type}_{dataset_type}.fa",
+    conda:
+        "envs/seqtk.yml"
+    shell:
+        """
+        seqtk seq --max-len 300 {input.fa}  > {output}
+        """
+
+
+rule build_rnasamba_model:
+    """
+    Build a new rnasamba model from the training data curated above.
+    The --early_stopping parameter reduces training time and can help avoid overfitting.
+    It is the number of epochs after lowest validation loss before stopping training.
+    """
+    input:
+        rnasamba="outputs/models/build/rnasamba/rnasamba_installed.txt",
+        fa=expand(
+            "outputs/models/datasets/2_sequence_sets/small/{coding_type}_train.fa",
+            coding_type=CODING_TYPES,
+        ),
+    output:
+        "outputs/models/build/rnasamba/0_model/eukaryotesmall_rnasamba.hdf5",
+    conda:
+        "envs/rnasamba.yml"
+    benchmark:
+        "benchmarks/models/build/rnasamba/0_model/eukaryotesmall_rnasamba.tsv"
+    shell:
+        """
+        rnasamba train --early_stopping 5 --verbose 2 {output} {input.fa[0]} {input.fa[1]}
+        """
