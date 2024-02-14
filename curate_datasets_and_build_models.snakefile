@@ -16,7 +16,7 @@ VALIDATION_TYPES = [
 # In addition, the order of CODING_TYPES and DATASET_TYPES is used to declare outputs in the rule/R script process_sequences_into_nonoverlapping_sets.
 CODING_TYPES = ["coding", "noncoding"]
 DATASET_TYPES = ["train", "test", "validation"]
-MODEL_TYPES = ["eukaryote", "eukaryotesmall" "human"]
+MODEL_TYPES = ["eukaryote", "eukaryotesmall", "human"]
 
 
 rule all:
@@ -329,14 +329,14 @@ rule filter_sequence_sets_to_small:
     output:
         fa="outputs/models/datasets/2_sequence_sets/small/{coding_type}_{dataset_type}.fa",
     conda:
-        "envs/seqtk.yml"
+        "envs/seqkit.yml"
     shell:
         """
-        seqtk seq --max-len 300 {input.fa}  > {output}
+        seqkit seq --max-len 300 -o {output.fa} {input.fa}
         """
 
 
-rule build_rnasamba_model:
+rule build_rnasamba_model_small:
     """
     Build a new rnasamba model from the training data curated above.
     The --early_stopping parameter reduces training time and can help avoid overfitting.
